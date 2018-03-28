@@ -4,9 +4,9 @@
 (function(angular){
 	//获取模块,注意后面要有依赖的模块
 	var myApp = angular.module("myapp",[]);
-//定义contentController
+	//定义contentController
 	myApp.controller("contentController",['$scope',function($scope){
-
+		/*列表信息*/
 		$scope.todos = [{
 			id : 1,
 			text : '打篮球',
@@ -35,13 +35,15 @@
 			}
 			var data = {},
 			datalen = 0 ;
-			datalen = $scope.todos.length-1 < 0  ?  0 : $scope.todos.length-1 ;
-			console.log(datalen);
+			datalen = $scope.todos.length ;
+			//console.log(datalen);
 			data.id = datalen + 1;
 			data.text = $scope.text;
 			data.completed = false;
 
 			$scope.todos.unshift(data);
+
+			console.log($scope.todos);
 		};
 
 		//清空数据
@@ -71,7 +73,27 @@
 			}
 
 			isAllCompletedSwitch = !isAllCompletedSwitch;
-		}
+		};
+
+		/*文件编辑*/
+		$scope.editingId = -1;
+		 $scope.edit = function(num){
+			 //console.log(num);
+			 for(var i = 0;i < $scope.todos.length ; i++ ){
+				 var item = $scope.todos[i];
+				 if(item.id === num){
+					 $scope.editingId = num;
+				 }
+			 }
+
+		 };
+
+		//取消编辑
+		$scope.cancelEdit = function(){
+			//重置
+			$scope.editingId = -1;
+		};
+
 
 		//$scope.watch('$scope.text',function(new,old){
 		//	console.log(new);

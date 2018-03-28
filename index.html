@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Template • TodoMVC</title>
+		<title>Mrhzk_todos</title>
 		<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
 		<!-- CSS overrides - remove if you don't need it -->
 		<link rel="stylesheet" href="css/app.css">
@@ -20,12 +20,15 @@
 				<input class="toggle-all" type="checkbox" ng-click="isAllCompleted()">
 				<label for="toggle-all">Mark all as complete</label>
 				<ul class="todo-list">
-					<li ng-repeat="item in todos" ng-class="{completed:item.completed}"  data-id="{{item.id}}">
+					<li ng-repeat="item in todos" ng-class="{completed:item.completed, editing:item.id === editingId}"  data-id="{{item.id}}">
 						<div class="view">
 							<input class="toggle" type="checkbox" ng-model="item.completed"  >
-							<label >{{item.text}}</label>
+							<label ng-dblclick="edit(item.id)" >{{item.text}}</label>
 							<button class="destroy " ng-click="delete(item.id)" ></button>
 						</div>
+						<form ng-submit="cancelEdit()">
+							<input class="edit" ng-model="item.text" >
+						</form>
 					</li>
 				</ul>
 			</section>
