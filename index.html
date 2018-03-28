@@ -24,13 +24,13 @@
 						<div class="view">
 							<input class="toggle" type="checkbox" ng-model="item.completed"  >
 							<label >{{item.text}}</label>
-							<button class="destroy "></button>
+							<button class="destroy " ng-click="delete(item.id)" ></button>
 						</div>
 					</li>
 				</ul>
 			</section>
 			<!-- This footer should hidden by default and shown when there are todos -->
-			<footer class="footer">
+			<footer class="footer" ng-if="todos.length > 0">
 				<!-- This should be `0 items left` by default -->
 				<span class="todo-count">{{todos.length}} item left</span>
 				<!-- Remove this if you don't implement routing -->
@@ -46,7 +46,7 @@
 					</li>
 				</ul>
 				<!-- Hidden if no completed items are left ↓ -->
-				<button class="clear-completed">Clear completed</button>
+				<button class="clear-completed" ng-click="clear()">Clear completed</button>
 			</footer>
 		</section>
 		<footer class="info">

@@ -27,19 +27,39 @@
 
 		/*填写的文本信息*/
 		$scope.text = "";
+
 		/*增加数据*/
 		$scope.add = function(){
 			if($scope.text === ''){
 				return;
 			}
-			var data = {};
-			data.id = $scope.todos[$scope.todos.length-1].id + 1;
+			var data = {},
+			datalen = 0 ;
+			datalen = $scope.todos.length-1 < 0  ?  0 : $scope.todos.length-1 ;
+			console.log(datalen);
+			data.id = datalen + 1;
 			data.text = $scope.text;
 			data.completed = false;
 
 			$scope.todos.unshift(data);
+		};
 
-			//console.log($scope.todos)
+		//清空数据
+		$scope.clear = function(){
+			$scope.todos = [];
+		};
+
+		//删除数据
+		$scope.delete = function(num){
+			//因为注册数组时从1开始，现在是用0开始
+			var num = num;
+			//id === num -->delete
+			for(var i = 0;i < $scope.todos.length ; i++ ){
+				var item = $scope.todos[i];
+				if(item.id === num){
+					$scope.todos.splice(i,1);
+				}
+			}
 		};
 
 		/*是否全选*/
@@ -55,7 +75,7 @@
 
 		//$scope.watch('$scope.text',function(new,old){
 		//	console.log(new);
-		//	
+		//
 		//});
 	}]);
 })(angular);
