@@ -28,6 +28,7 @@
 						<li ng-repeat="item in todos | filter : selector:determine track by $index" ng-class="{completed:item.completed, editing:item.id === editingId}"  data-id="{{item.id}}">
 							<div class="view">
 								<input class="toggle" type="checkbox" ng-model="item.completed" ng-change="change()" >
+
 								<label ng-dblclick="edit(item.id)" >{{item.text}}</label>
 								<button class="destroy " ng-click="delete(item.id)" ></button>
 							</div>
