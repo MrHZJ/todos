@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>route路由</title>
+	<title>Mrhzk_todos</title>
+	<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
+	<!-- CSS overrides - remove if you don't need it -->
+	<link rel="stylesheet" href="css/app.css">
+	<style>
+		ul li {
+			line-height: 50px;
+		}
+	</style>
+</head>
+<body ng-app="myapp2" ng-controller= "zjcontroller">
+	<ul class="todo-list">
+		<input type="text" ng-model="text"/>
+		<li ng-repeat="item in data track by $index"> <!--| filter:{completed:false}-->
+			<spn>{{item.id}}</spn>
+			<spn>{{item.text}}</spn>
+			<spn>{{item.completed | tags : 1}}</spn>
+			<input type="checkbox" ng-model="status"/>
+		</li>
+		<li ng-repeat="item in data track by $index"> <!--| filter:{completed:false}-->
+			<spn>{{item.id}}</spn>
+			<spn>{{item.text}}</spn>
+			<spn>{{item.completed | tags : 2}}</spn>
+			<input type="checkbox" ng-model="status"/>
+		</li>
+		<li ng-repeat="item in data track by $index"> <!--| filter:{completed:false}-->
+			<spn>{{item.id}}</spn>
+			<spn>{{item.text}}</spn>
+			<spn>{{item.completed | tags : 3}}</spn>
+			<input type="checkbox" ng-model="status"/>
+		</li>
+
+	</ul>
+	<div><h1>{{ true | tags }}</h1></div>
+	<ng-view></ng-view>
+	<ul>
+	<li><a href="#/a">a</a></li>
+	<li><a href="#/b">b</a></li>
+	<li><a href="#/c">c</a></li>
+	</ul>
+	<script id="hzj" type="text/ng-template">
+		<h1>{{text}}</h1>
+	</script>
+
+</body>
+
+<script src="node_modules/angular/angular.js"></script>
+<script src="node_modules/angular-route/angular-route.js"></script>
+<script src="js/zj.js"></script>
+<script>
+	/*练习*/
+	var zj = angular.module("myapp2",['ngRoute']);
+	zj.config(['$routeProvider',function($routeProvider){
+		$routeProvider.when('/a',{
+			controller : 'Acontroller',
+			templateUrl : 'hzj'
+		}).when('/b',{
+			controller : 'Bcontroller',
+			templateUrl : 'hzj'
+		}).otherwise({
+			controller : 'Ccontroller',
+			templateUrl : 'hzj'
+		})
+	}]);
+	zj.controller('Acontroller',['$scope',function($scope){
+		$scope.text = "A !!!"
+	}]);
+	zj.controller('Bcontroller',['$scope',function($scope){
+		$scope.text = "B !!!"
+	}]);
+	zj.controller('Ccontroller',['$scope',function($scope){
+		$scope.text = "C !!!"
+	}]);
+	zj.controller('zjcontroller',['$scope',function($scope){
+		$scope.text = '';
+		$scope.status = false;
+		$scope.data = [{
+			id : 4,
+			text : '打篮球',
+			completed : false
+		},{
+			id : 3,
+			text : '打运毛球',
+			completed : false
+		},{
+			id : 2,
+			text : '听音乐',
+			completed :true
+		},{
+			id : 1,
+			text :'画画',
+			completed : false
+		}];
+		$scope.$watch('text',function(now,old){
+			console.log(now);
+		})
+
+
+	}]);
+	//自定义过滤器
+	zj.filter('tags',function(){
+		return function(bool,style){//这样才能传参数
+			switch (style){
+				case 1 :
+					return (bool ? '\u2713' : '\u2718');
+				case  2 :
+					return (bool ? '\u2712' : '\u2716');
+				case  3 :
+					return (bool ? '\u2714' : '\u2719');
+			}
+
+		}
+	});
+	//$scope.selector =
+</script>
+</html>

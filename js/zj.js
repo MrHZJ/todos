@@ -3,9 +3,18 @@
  */
 (function(angular){
 	//获取模块,注意后面要有依赖的模块
-	var myApp = angular.module("myapp",[]);
+	var myApp = angular.module("myapp",['ngRoute']);
+	myApp.config(["$routeProvider",function($routeProvider){
+		$routeProvider.when('/:status',{
+			//templateUrl :
+			templateUrl : 'imfor',
+			controller : 'contentController'
+		}).otherwise({
+			redirectTo : '/'
+		})
+	}]);
 	//定义contentController
-	myApp.controller("contentController",['$scope','$location','$timeout','$window',function($scope,$location,$timeout,$window){
+	myApp.controller("contentController",['$scope','$routeParams','$route','$window',function($scope,$routeParams,$route,$window){
 		/*列表信息*/
 
 		$scope.todos = [{
@@ -26,7 +35,37 @@
 			completed : false
 		}];
 
-		//console.log($window)
+		//获取路径的hash值
+		myApp.filter('filter',function(target,source){
+			console.log(target);
+			console.log(source);
+		});
+		$scope.selector = {};
+		$scope.status = $routeParams.status;
+		console.log($scope.status)
+		switch ($scope.status){
+			case 'active':
+				$scope.selector = {completed : false};
+				break;
+			case 'completed':
+				$scope.selector = {completed : true};
+				break;
+			default :
+				var status = $scope.status;
+				$route.updateParams({ status : ''});
+				$scope.status = status;
+				$scope.selector = {};
+				break;
+		}
+
+
+		$scope.determine = function(source,target){
+			//console.log(source)
+			//console.log(target);
+			return source === target;
+		};
+
+
 		var storage = $window.localStorage;
 		if(storage['$scope_todos']){
 			$scope.todos = JSON.parse(storage['$scope_todos']);
@@ -47,9 +86,7 @@
 				return;
 			}
 			var data = {};
-			//datalen = 0 ;
-			//datalen = $scope.todos.length ;
-			//console.log(datalen);
+			//让id自增
 			if($scope.todos.length){
 				data.id = $scope.todos[0].id+1;
 			}else {
@@ -60,27 +97,45 @@
 			data.completed = false;
 
 			$scope.todos.unshift(data);
-
+			/*重置文本框*/
+			$scope.text = "";
+			/*保存到本地*/
 			save();
-			console.log($scope.todos);
+			//console.log($scope.todos);
 		};
 
 		//清空数据
 		$scope.clear = function(){
 			/*重置设置*/
 			inNum = 0;
-
-			$scope.todos = [];
+			var newArr = [];
+			for(var i = 0;i < $scope.todos.length ; i++ ){
+				var item = $scope.todos[i];
+				if(!item.completed === true){
+					newArr.push(item)
+				}
+			}
+			$scope.todos = newArr;
+			console.log($scope.todos);
 			save()
+		};
+
+		//是否显示清除按钮
+		$scope.isClear = function(){
+			for(var i = 0;i < $scope.todos.length ; i++ ){
+				var item = $scope.todos[i];
+				//console.log('item.completed  :'+  item.completed)
+				//console.log('i  :'+  i)
+				if(item.completed === true){
+					return true;
+				}
+			}
+			return false;
 		};
 
 		//删除数据
 		$scope.delete = function(num){
-			/*重置设置*/
-			inNum = 0;
 
-			var num = num;
-			//id === num -->delete
 			for(var i = 0;i < $scope.todos.length ; i++ ){
 				var item = $scope.todos[i];
 				/*假如item.id与传进来的数字符合，就可以确认该元素了*/
@@ -106,126 +161,13 @@
 		/*文件编辑*/
 		$scope.editingId = -1;
 		 $scope.edit = function(num){
-			 //console.log(num);
-			 for(var i = 0;i < $scope.todos.length ; i++ ){
-				 var item = $scope.todos[i];
-				 if(item.id === num){
-					 $scope.editingId = num;
-				 }
-			 }
-
+			 $scope.editingId = num;
 		 };
-
 		//取消编辑
 		$scope.cancelEdit = function(){
 			//重置
 			$scope.editingId = -1;
 		};
 
-		//筛选器
-		/*$location的用法
-		$location.absUrl();// http://example.com:8080/#/some/path?foo=bar&baz=xoxo#hashValue
-		$location.url();// some/path?foo=bar&baz=xoxo
-		$location.protocol();// http
-		$location.host();// example.com
-		$location.port();// 8080
-		$location.path();// /some/path
-		$location.search();// {foo: 'bar', baz: 'xoxo'}
-		$location.search('foo', 'yipee');
-		$location.search();// {foo: 'yipee', baz: 'xoxo'}
-		 $location.hash();// #hashValue
-		*/
-
-		var newList = [];
-		$scope.filterStatus = 0;
-		 $scope.filterList = function(){
-			 var filterWay = '';
-
-			 function getUrl(){
-				 filterWay = $location.url();
-
-				 switch (filterWay){
-					 case '/active':
-						 filData(false);
-						 break;
-					 case '/completed':
-						 filData(true);
-						 break;
-					 case '/':
-						 filData();
-						 break;
-				 }
-			 }
-			 $timeout(getUrl,50);
-
-
-			 function filData(option){
-				 //如果没有参数，那么返回$scope.todos
-				 if(inNum === 0){
-					 newList = [];
-					 for(var i = 0;i <$scope.todos.length ; i++ ){
-						var item = $scope.todos[i];
-						newList.push(item);
-					 }
-					 //newList = $scope.todos;
-				 }else {
-					 $scope.todos = [];
-					 for(var i = 0;i <newList.length ; i++ ){
-						 var item = newList[i];
-						 $scope.todos.push(item);
-					 }
-					 //$scope.todos = newList
-				 }
-				 //console.log(option)
-				 if(option == undefined){
-					 $scope.filterStatus = 0;
-
-					 save()
-					 return $scope.todos
-				 }
-
-				 if(!option){//active
-					 $scope.filterStatus = 1;
-				 }else {//completed
-					 $scope.filterStatus = 2;
-				 }
-
-				 //console.log($scope.todos)
-				 //console.log(newList);
-
-				 inNum++;
-				 //储存状态值对应的索引
-				 var numArr = [];
-
-
-				 //找出删除元素的位置，储存在numArr里面
-				 for(var i = 0;i < newList.length ; i++ ){
-					 var item = newList[i];
-					 //console.log('item.completed  :'+  item.completed)
-					 //console.log('i  :'+  i)
-					 if(!item.completed === option){
-						 numArr.push(i)
-					 }
-				 }
-
-				 //倒置数组numArr
-				 numArr = numArr.sort(function(a,b){ return (a < b)});
-
-				 //console.log(numArr)
-				 //对应数组的位置删除
-				 for(var j = 0;j < numArr.length  ; j++){//因为执行的过程元素不断减少，所以会导致最终少于原来的长度值
-					 $scope.todos.splice(numArr[j],1)
-				 }
-
-				 save()
-			 };
-		 };
-
-
-
-		//$scope.watch('$scope.text',function(new,old){
-		//	console.log(new);
-		//
-		//});
 	}]);
 })(angular);
