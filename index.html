@@ -16,8 +16,6 @@
 				<header class="header">
 					<form ng-submit="add()">
 						<h1>todos </h1>
-						<!--<h1>{{path}} </h1>-->
-						<!--<pre>{{ todos | json }}</pre>-->
 						<input class="new-todo" placeholder="What needs to be done?" ng-model="text" autofocus>
 					</form>
 				</header>
@@ -60,7 +58,6 @@
 					<button class="clear-completed" ng-click="clear()"  ng-if="isClear()">Clear completed</button>
 				</footer>
 			</section>
-			{{selector.completed}}
 		</script>
 		<footer class="info">
 			<p>Double-click to edit a todo</p>

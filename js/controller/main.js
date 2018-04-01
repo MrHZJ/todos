@@ -14,27 +14,27 @@
 		//改变状态
 		$scope.change = function(){
 			//保存数据
-			save();
+			mainservice.change($scope.todos);
 		};
+
 		/*增加数据*/
 		$scope.add = function(){
 			//假如为空则不执行
 			if($scope.text === ''){
 				return;
 			}
-
-			mainservice.add($scope.text);
+			console.log(132)
+			$scope.todos = mainservice.add($scope.text);
+			console.log(132)
 			/*重置文本框*/
 			$scope.text = "";
 			/*保存到本地*/
-			save();
+
 		};
 
 		//清空数据
 		$scope.clear = function(){
-			$scope.todos = mainservice.clear();
-
-			save()
+			$scope.todos = mainservice.clear($scope.todos);
 		};
 
 		//是否显示清除按钮
@@ -50,14 +50,16 @@
 
 		//删除数据
 		$scope.delete = function(num){
-			mainservice.delete(num);
-			save();
+			$scope.todos = mainservice.delete(num);
+			//save();
 		};
 
 		/*是否全选*/
-		var isAll = true;
+
 		$scope.isAllCompleted = function(){
-			mainservice.isAllCompleted(isAll);
+			$scope.todos = mainservice.isAllCompleted();
+
+
 		};
 
 		/*文件编辑*/
@@ -94,14 +96,7 @@
 			return source === target;
 		};
 
-		//永久保存
-		var storage = $window.localStorage;
-		if(storage['$scope_todos']){
-			$scope.todos = JSON.parse(storage['$scope_todos']);
-		}
-		function save(){
-			storage["$scope_todos"] = JSON.stringify($scope.todos);
-		}
+
 
 	}]);
 })(angular);

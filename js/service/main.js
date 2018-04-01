@@ -4,31 +4,31 @@
 (function(angular){
 	'use strict';
 	angular.module('app.service.main',[])
-		.service('mainservice',[function(){
+		.service('mainservice',['$window',function($window){
 			/*列表信息*/
-			var todos = [{
-				id : 4,
-				text : '打篮球',
-				completed : false
-			},{
-				id : 3,
-				text : '打运毛球',
-				completed : false
-			},{
-				id : 2,
-				text : '听音乐',
-				completed :true
-			},{
-				id : 1,
-				text : '画画',
-				completed : false
-			}];
+			var todos = [];
+
+			//永久保存
+			var storage = $window.localStorage;
+			if(storage['todos']){
+				todos = JSON.parse(storage['todos']);
+			}
+			save();
+			function save(){
+				storage["todos"] = JSON.stringify(todos);
+			}
 
 			//往外暴露数据
 			this.get = function(){
 				return todos;
 			};
 
+			//保存状态改变的值
+			this.change = function(data){
+				todos = data;
+
+				save();
+			};
 			/*增加数据*/
 			this.add = function(text){
 				var data = {};
@@ -43,6 +43,9 @@
 				data.completed = false;
 
 				todos.unshift(data);
+
+				save();
+				return todos;
 			};
 
 			//删除数据
@@ -54,32 +57,41 @@
 						todos.splice(i,1);
 					}
 				}
+
+				save();
+				return todos;
 			};
 
 			//清空数据
-			this.clear = function(){
+			this.clear = function(data){
 				/*重置设置*/
 				var newArr = [];
-				for(var i = 0;i < todos.length ; i++ ){
-					var item = todos[i];
+				for(var i = 0;i < data.length ; i++ ){
+					var item = data[i];
 					if(!item.completed === true){
 						newArr.push(item)
 					}
 				}
 				todos = newArr;
 
+				save();
 				return todos;
 			};
 
 			//是否全选
-			this.isAllCompleted = function(bool){
-				var isAll = bool;
+			var isAllComp = true;
+			this.isAllCompleted = function(){
 				for(var i = 0; i < todos.length ; i++){
 					var item = todos[i];
-					item.completed = isAll;
+					item.completed = isAllComp;
 				}
 
-				isAll = !isAll;
+				isAllComp = !isAllComp;
+
+				save();
+				return todos;
 			};
+
+
 		}])
 })(angular);
