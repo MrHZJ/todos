@@ -9,49 +9,58 @@
 		<link rel="stylesheet" href="css/app.css">
 	</head>
 	<body ng-app="myapp">
-		<section class="todoapp" ng-controller="contentController">
-			<header class="header">
-				<form ng-submit="add()">
-					<h1>todos</h1>
-					<input class="new-todo" placeholder="What needs to be done?" ng-model="text" autofocus>
-				</form>
-			</header>
-			<section class="main">
-				<input class="toggle-all" type="checkbox" ng-click="isAllCompleted()">
-				<label for="toggle-all">Mark all as complete</label>
-				<ul class="todo-list">
-					<li ng-repeat="item in todos track by $index" ng-class="{completed:item.completed, editing:item.id === editingId}"  data-id="{{item.id}}">
-						<div class="view">
-							<input class="toggle" type="checkbox" ng-model="item.completed"  >
-							<label ng-dblclick="edit(item.id)" >{{item.text}}</label>
-							<button class="destroy " ng-click="delete(item.id)" ></button>
-						</div>
-						<form ng-submit="cancelEdit()">
-							<input class="edit" ng-model="item.text" >
-						</form>
-					</li>
-				</ul>
+
+		<ng-view></ng-view>
+		<script type="text/ng-template" id="imfor">
+			<section class="todoapp">
+				<header class="header">
+					<form ng-submit="add()">
+						<h1>todos </h1>
+						<!--<h1>{{path}} </h1>-->
+						<!--<pre>{{ todos | json }}</pre>-->
+						<input class="new-todo" placeholder="What needs to be done?" ng-model="text" autofocus>
+					</form>
+				</header>
+				<section class="main">
+					<input class="toggle-all" type="checkbox" ng-click="isAllCompleted()">
+					<label for="toggle-all">Mark all as complete</label>
+					<ul class="todo-list">
+						<li ng-repeat="item in todos | filter : selector:determine track by $index" ng-class="{completed:item.completed, editing:item.id === editingId}"  data-id="{{item.id}}">
+							<div class="view">
+								<input class="toggle" type="checkbox" ng-model="item.completed" ng-change="change()" >
+								<label ng-dblclick="edit(item.id)" >{{item.text}}</label>
+								<button class="destroy " ng-click="delete(item.id)" ></button>
+							</div>
+							<form ng-submit="cancelEdit()">
+								<input class="edit" ng-model="item.text" >
+							</form>
+						</li>
+					</ul>
+				</section>
+
+				<!-- This footer should hidden by default and shown when there are todos -->
+				<footer class="footer" ng-if="todos.length  ">
+					<!-- This should be `0 items left` by default -->
+					<span class="todo-count">{{todos.length}} item left</span>
+					<!-- Remove this if you don't implement routing -->
+
+					<ul class="filters">
+						<li>
+							<a ng-class="{selected:status === undefined}"  href="#/" ng-click="filterList()">All</a>
+						</li>
+						<li>
+							<a ng-class="{selected:status === 'active'}" href="#/active"  ng-click="filterList()">Active</a>
+						</li>
+						<li>
+							<a ng-class="{selected:status === 'completed'}" href="#/completed"  ng-click="filterList()">Completed</a>
+						</li>
+					</ul>
+					<!-- Hidden if no completed items are left ↓ -->
+					<button class="clear-completed" ng-click="clear()"  ng-if="isClear()">Clear completed</button>
+				</footer>
 			</section>
-			<!-- This footer should hidden by default and shown when there are todos -->
-			<footer class="footer" ng-if="todos.length > 0">
-				<!-- This should be `0 items left` by default -->
-				<span class="todo-count">{{todos.length}} item left</span>
-				<!-- Remove this if you don't implement routing -->
-				<ul class="filters">
-					<li>
-						<a ng-class="{selected:filterStatus === 0}" href="#/" ng-click="filterList()">All</a>
-					</li>
-					<li>
-						<a href="#/active" ng-class="{selected:filterStatus === 1}" ng-click="filterList()">Active</a>
-					</li>
-					<li>
-						<a href="#/completed" ng-class="{selected:filterStatus === 2}" ng-click="filterList()">Completed</a>
-					</li>
-				</ul>
-				<!-- Hidden if no completed items are left ↓ -->
-				<button class="clear-completed" ng-click="clear()">Clear completed</button>
-			</footer>
-		</section>
+			{{selector.completed}}
+		</script>
 		<footer class="info">
 			<p>Double-click to edit a todo</p>
 			<!-- Remove the below line ↓ -->
@@ -62,6 +71,9 @@
 		</footer>
 		<!-- Scripts here. Don't remove ↓ -->
 		<script src="node_modules/angular/angular.js"></script>
+		<script src="node_modules/angular-route/angular-route.js"></script>
+		<script src="js/service/main.js"></script>
+		<script src="js/controller/main.js"></script>
 		<script src="js/zj.js"></script>
 		<!--<script src="js/app.js"></script>-->
 	</body>
